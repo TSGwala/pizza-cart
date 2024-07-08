@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Pizza Online Order</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.1/dist/cdn.min.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: aqua;
+        }
+
+        .pizza {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0; 
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5em;
+            border-radius: 0.5em;
+        }
+
+        .pizza img {
+            display: block;
+            margin: 10px 0;
+        }
+
+        /* .pizzas {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        } */
+        .pizzas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .cart {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .cart-item span {
+            margin-right: 10px;
+        }
+
+        .contact_us {
+            margin-top: 20px;
+        }
+
+        .medium_pizza {
+            border-radius: 8px;
+            background-color: rgba(0, 0, 255, 0.167);
+            flex: 200px;
+        }
+
+        .large_pizza {
+            border-radius: 8px;
+            background-color: rgb(92, 100, 0);
+            flex: 300px;
+        }
+
+        .small_pizza {
+            border-radius: 8px;
+            background-color: rgba(137, 43, 226, 0.51);
+            flex: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .pizzas {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (min-width:960px) {
+            .pizzas {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body x-data="pizzaCart()">
+    <h1>Perfect Pizza</h1>
+
+    <!-- Pizza Selection Section -->
+    <div class="pizzas">
+        <div class="small_pizza">
+            <h2>Small Pizza</h2>
+            <img src="pizza.png" width="50" alt="Small Pizza">
+            <h3>R49.00</h3>
+            <div>
+                Perfect for a light meal, our Small Pizza is topped with fresh ingredients and bursting with flavor.
+            </div>
+            <button @click="addToCart('small')">Order Small Pizza</button>
+        </div>
+
+        <div class="medium_pizza">
+            <h2>Medium Pizza</h2>
+            <img src="pizza.png" width="100" alt="Medium Pizza">
+            <h3>R89.00</h3>
+            <div>
+                Our Medium Pizza is ideal for sharing, with a perfect balance of toppings and our signature sauce.
+            </div>
+            <button @click="addToCart('medium')">Order Medium Pizza</button>
+        </div>
+
+        <div class="large_pizza">
+            <h2>Large Pizza</h2>
+            <img src="pizza.png" width="200" alt="Large Pizza">
+            <h3>R129.00</h3>
+            <div>
+                Go big with our Large Pizza, loaded with generous toppings and perfect for satisfying your hunger.
+            </div>
+            <button @click="addToCart('large')">Order Large Pizza</button>
+        </div>
+    </div>
+
+    <!-- Contact Us Section -->
+    <div class="pizza contact_us">
+        <h2>Contact details</h2>
+        Contact us at: 013 453 5555 | info@perfectpizza.co.za
+    </div>
+
+    <!-- Cart Section -->
+    <div class="cart" x-show="cart.length > 0">
+        <h2>Your Cart</h2>
+        <template x-for="(item, index) in cart" :key="index">
+            <div class="cart-item">
+                <span x-text="item.size"></span>
+                <span>x</span>
+                <span x-text="item.quantity"></span>
+                <button @click="removeFromCart(index)">Remove</button>
+            </div>
+        </template>
+        <div>
+            <p>Total Small Pizzas: <span x-text="totalSmallPizzas"></span></p>
+            <p>Total Medium Pizzas: <span x-text="totalMediumPizzas"></span></p>
+            <p>Total Large Pizzas: <span x-text="totalLargePizzas"></span></p>
+            <p>Total Cost: R<span x-text="totalCost"></span></p>
+            <button @click="checkout()">Check Out</button>
+        </div>
+    </div>
+
+    <div x-show="checkoutMessage">
+        <p x-text="checkoutMessage"></p>
+    </div>
+
+    <script>
+        function pizzaCart() {
+            return {
+                cart: [],
+                checkoutMessage: '',
+
+                get totalSmallPizzas() {
+                    return this.cart.filter(item => item.size === 'small').reduce((sum, item) => sum + item.quantity, 0);
+                },
+
+                get totalMediumPizzas() {
+                    return this.cart.filter(item => item.size === 'medium').reduce((sum, item) => sum + item.quantity, 0);
+                },
+
+                get totalLargePizzas() {
+                    return this.cart.filter(item => item.size === 'large').reduce((sum, item) => sum + item.quantity, 0);
+                },
+
+                get totalCost() {
+                    return this.totalSmallPizzas * 49 + this.totalMediumPizzas * 89 + this.totalLargePizzas * 129;
+                },
+
+                addToCart(size) {
+                    let existingItem = this.cart.find(item => item.size === size);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        this.cart.push({ size: size, quantity: 1 });
+                    }
+                },
+
+                removeFromCart(index) {
+                    if (this.cart[index].quantity > 1) {
+                        this.cart[index].quantity--;
+                    } else {
+                        this.cart.splice(index, 1);
+                    }
+                },
+
+                checkout() {
+                    let paymentAmount = prompt("Enter payment amount:");
+                    if (paymentAmount >= this.totalCost) {
+                        this.checkoutMessage = "Thank you for buying enjoy your pizzas!";
+                        this.cart = [];
+                    } else {
+                        this.checkoutMessage = "Sorry - that is not enough money!";
+                    }
+                    setTimeout(() => {
+                        this.checkoutMessage = '';
+                    }, 3000);
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>
