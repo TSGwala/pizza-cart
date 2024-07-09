@@ -17,7 +17,7 @@
             border: 1px solid #ccc;
             border-radius: 8px;
             padding: 10px;
-            margin: 10px 0; 
+            margin: 10px 0;
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 0.5em;
@@ -29,11 +29,6 @@
             margin: 10px 0;
         }
 
-        /* .pizzas {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        } */
         .pizzas {
             display: flex;
             flex-wrap: wrap;
@@ -51,6 +46,7 @@
         .cart-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
         }
 
@@ -87,7 +83,7 @@
             }
         }
 
-        @media (min-width:960px) {
+        @media (min-width: 960px) {
             .pizzas {
                 display: flex;
             }
@@ -145,6 +141,8 @@
                 <span x-text="item.size"></span>
                 <span>x</span>
                 <span x-text="item.quantity"></span>
+                <button @click="decrement(index)">-</button>
+                <button @click="increment(index)">+</button>
                 <button @click="removeFromCart(index)">Remove</button>
             </div>
         </template>
@@ -192,12 +190,20 @@
                     }
                 },
 
-                removeFromCart(index) {
+                increment(index) {
+                    this.cart[index].quantity++;
+                },
+
+                decrement(index) {
                     if (this.cart[index].quantity > 1) {
                         this.cart[index].quantity--;
                     } else {
                         this.cart.splice(index, 1);
                     }
+                },
+
+                removeFromCart(index) {
+                    this.cart.splice(index, 1);
                 },
 
                 checkout() {
